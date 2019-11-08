@@ -16,7 +16,8 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyC19n2TkDHQQGWy_LTD7h3EbaNmLA2Rm18" />
+            android:value="" />
+            // PUT YOUR GOOGLE API KEY HERE
 
         <activity
             android:name=".ui.login.LoginActivity"
