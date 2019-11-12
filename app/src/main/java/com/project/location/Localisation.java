@@ -6,8 +6,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
+import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Bundle;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +22,7 @@ public class Localisation extends AppCompatActivity {
     private double lon;
     private Context mContext;
     LocationManager locationManager;
+    LocationListener locationListener;
 
 
 
@@ -28,6 +31,29 @@ public class Localisation extends AppCompatActivity {
         this.lon = 0;
         mContext = context;
         locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                   lat = location.getLatitude();
+                   lon = location.getLongitude();
+                   locationManager.removeUpdates(this);
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
         getLocation();
     }
 
@@ -77,13 +103,13 @@ public class Localisation extends AppCompatActivity {
         // Met
         final float MIN_DISTANCE_CHANGE_FOR_UPDATES = 1;
 
-        android.location.Location myLocation = null;
+        android.location.Location myLocation;
         try {
             // This code need permissions (Asked above ***)
-            /*locationManager.requestLocationUpdates(
+            locationManager.requestLocationUpdates(
                     locationProvider,
                     MIN_TIME_BW_UPDATES,
-                    MIN_DISTANCE_CHANGE_FOR_UPDATES, (LocationListener) this);*/
+                    MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
 
             // Getting Location.
             myLocation = locationManager.getLastKnownLocation(locationProvider);

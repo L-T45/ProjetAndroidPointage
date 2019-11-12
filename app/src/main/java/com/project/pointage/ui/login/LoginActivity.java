@@ -13,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -27,18 +26,14 @@ import com.project.pointage.R;
 import com.project.pointage.ui.login.LoginViewModel;
 import com.project.pointage.ui.login.LoginViewModelFactory;
 
-import com.project.location.Localisation;
-
 public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
-    Localisation location;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        location = new Localisation(this);
         loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory())
                 .get(LoginViewModel.class);
 
@@ -80,7 +75,6 @@ public class LoginActivity extends AppCompatActivity {
 
                 //Complete and destroy login activity once successful
                 finish();
-
             }
         });
 
@@ -123,8 +117,6 @@ public class LoginActivity extends AppCompatActivity {
                         passwordEditText.getText().toString());
             }
         });
-        Log.w("Lat : ", "" + location.getLat());
-        Log.w("Lon : ", "" + location.getLon());
     }
 
     private void updateUiWithUser(LoggedInUserView model) {
