@@ -17,7 +17,7 @@ public class LoggedInUser {
         return userId;
     }
 
-    public String getDisplayName() {
+    public String getDisplayName()  {
         return displayName;
     }
 }
