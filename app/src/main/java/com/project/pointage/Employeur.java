@@ -11,28 +11,33 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class Employer extends AppCompatActivity {
+import com.project.pointage.ui.login.LoginActivity;
 
-    private SharedPreferences pref;
+public class Employeur extends AppCompatActivity {
+
+    private SharedPreferences preferences ;
+    private boolean status = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_employe);
+        setContentView(R.layout.activity_employeur);
         Intent intent = getIntent();
-        pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         String user = intent.getStringExtra("user");
+        preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         if(intent.hasExtra("user") && !user.isEmpty() ){
             Message messenger = new Message();
-            messenger.message(Employer.this,null,"Bienvenu "+user,2);
+            messenger.message(Employeur.this,null,"Bienvenu "+user,2);
         }
     }
 
 
-    //NE PAS TOUCHER A CETTE FONCTION
+
+
+
+    //NE PAS TOUCHER A CETTTE FONCTION
     @Override
     public void onBackPressed() {
-
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Confirmation");
         builder.setMessage("Veuillez confirmer votre déconnexion");
@@ -40,14 +45,14 @@ public class Employer extends AppCompatActivity {
         builder.setPositiveButton("OUI", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-
-                String user = pref.getString("user",null);
+               // SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+                String user = preferences.getString("user",null);
                 Log.i("debug","The user :"+user);
-                SharedPreferences.Editor editor = pref.edit();
+                SharedPreferences.Editor editor = preferences.edit();
                 editor.putString("user",null);
                 editor.putInt("fonction",-1);
                 editor.apply();
-                Employer.super.onBackPressed();
+                Employeur.super.onBackPressed();
             }
         });
         AlertDialog alert = builder.create();

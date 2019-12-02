@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProviders;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
@@ -15,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -52,7 +54,8 @@ public class LoginActivity extends AppCompatActivity {
         final EditText passwordEditText = findViewById(R.id.password);
         final Button loginButton = findViewById(R.id.login);
         final ProgressBar loadingProgressBar = findViewById(R.id.loading);
-
+        usernameEditText.setText("");
+        passwordEditText.setText("");
 
 
         loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
@@ -88,7 +91,8 @@ public class LoginActivity extends AppCompatActivity {
                     updateUiWithUser(loginResult.getSuccess());
                 }
                 setResult(Activity.RESULT_OK);
-
+                usernameEditText.setText("");
+                passwordEditText.setText("");
                 //Complete and destroy login activity once successful
                 //finish();
             }
@@ -132,16 +136,7 @@ public class LoginActivity extends AppCompatActivity {
                 username = usernameEditText.getText().toString();
                 password = passwordEditText.getText().toString();
 
-                Log.i("debug","The username: "+username+" and the password: "+password);
-              /*  SQLiteDatabase sqLiteDatabase = database.getWritableDatabase();
-                ContentValues contentValues = new ContentValues();
-                contentValues.put("username",username);
-                contentValues.put("password",authentification.get_hash_pasword(password));
-                contentValues.put("name","CAPOU");
-                contentValues.put("firstname","Marie-Joseph");
-                contentValues.put("type",1);
-                sqLiteDatabase.insert("employe",null,contentValues);*/
-               isCheckUser = authentification.checkUser(username,password,database);
+                isCheckUser = authentification.checkUser(username,password,database);
                Log.i("debug","is User valid LogActivity: "+isCheckUser);
                if(isCheckUser){
                     loginViewModel.login(username,password);
@@ -164,13 +159,24 @@ public class LoginActivity extends AppCompatActivity {
        // String welcome = getString(R.string.welcome) + model.getDisplayName();
         // TODO : initiate successful logged in experience
        // Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(this,Employer.class);
+
+        Intent intent = null ;
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        int type = pref.getInt("fonction",-1);
+        Log.i("debug","Valeur de la fonction: "+type);
+        if(type == 1){
+            intent = new Intent(this,Employer.class);
+        }
+        else if(type == 0){
+            intent = new Intent(this,Employeur.class);
+        }
+        intent.putExtra("user",pref.getString("user",null));
         startActivity(intent);
     }
 
 
     private void showLoginFailed(@StringRes Integer errorString) {
-        Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
+       // Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
         messenger.message(LoginActivity.this,"Error",""+errorString,0);
     }
 
