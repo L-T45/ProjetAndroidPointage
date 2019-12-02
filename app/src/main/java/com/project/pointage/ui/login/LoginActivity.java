@@ -5,6 +5,7 @@ import android.app.Activity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -23,8 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.project.pointage.R;
-import com.project.pointage.ui.login.LoginViewModel;
-import com.project.pointage.ui.login.LoginViewModelFactory;
+import com.project.pointage.Employe;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -128,4 +128,9 @@ public class LoginActivity extends AppCompatActivity {
     private void showLoginFailed(@StringRes Integer errorString) {
         Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
     }
+
+        public void page1(View view) {
+            startActivity(new Intent(LoginActivity.this, Employe.class));
+        }
+
 }
