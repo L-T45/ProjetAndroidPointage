@@ -28,6 +28,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.project.location.Work_Place;
 
 import com.project.pointage.R;
 import com.project.pointage.*;
@@ -36,6 +37,7 @@ import com.project.pointage.ui.login.LoginViewModelFactory;
 public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
+
     private Database database = new Database(LoginActivity.this);
     private Authentification authentification = new Authentification(LoginActivity.this);
     private String username = null;
@@ -43,10 +45,16 @@ public class LoginActivity extends AppCompatActivity {
     private boolean isCheckUser = false;
     private Message messenger = new Message();
 
+    private Work_Place verif;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        verif = new Work_Place(this);
+        Log.w("is inside ?", "" + verif.insideZone());
+
         loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory())
                 .get(LoginViewModel.class);
 
