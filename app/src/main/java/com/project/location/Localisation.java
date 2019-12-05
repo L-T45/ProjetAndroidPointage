@@ -1,20 +1,12 @@
 package com.project.location;
-
-import android.Manifest;
-
-import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-
 
 public class Localisation extends AppCompatActivity {
 
@@ -40,56 +32,36 @@ public class Localisation extends AppCompatActivity {
             }
 
             @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-            }
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
 
             @Override
-            public void onProviderEnabled(String provider) {
-
-            }
+            public void onProviderEnabled(String provider) {}
 
             @Override
-            public void onProviderDisabled(String provider) {
-
-            }
+            public void onProviderDisabled(String provider) {}
         };
         getLocation();
     }
 
-    private boolean checkPermission() {
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission
-                (mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-            ActivityCompat.requestPermissions((Activity)mContext, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-            return false;
-        }
-        else return true;
-    }
 
     private String getEnabledLocationProvider() {
-        if (this.checkPermission()) {
 
+        // Criteria to find location provider.
+        Criteria criteria = new Criteria();
 
+        // Returns the name of the provider that best meets the given criteria.
+        // ==> "gps", "network",...
+        String bestProvider = locationManager.getBestProvider(criteria, true);
 
-            // Criteria to find location provider.
-            Criteria criteria = new Criteria();
+        boolean enabled = locationManager.isProviderEnabled(bestProvider);
 
-            // Returns the name of the provider that best meets the given criteria.
-            // ==> "gps", "network",...
-            String bestProvider = locationManager.getBestProvider(criteria, true);
-
-            boolean enabled = locationManager.isProviderEnabled(bestProvider);
-
-            if (!enabled) {
-                return null;
-            }
-            Log.w("Best Provider : ", bestProvider);
-            return bestProvider;
+        if (!enabled) {
+            return null;
         }
-        else return null;
+        return bestProvider;
     }
+
 
     private void getLocation() {
         String locationProvider = this.getEnabledLocationProvider();
@@ -119,6 +91,8 @@ public class Localisation extends AppCompatActivity {
         catch (SecurityException e) {
             return;
         }
+
+        locationManager.removeUpdates(locationListener);
 
         if (myLocation != null) {
             lon = myLocation.getLongitude();
