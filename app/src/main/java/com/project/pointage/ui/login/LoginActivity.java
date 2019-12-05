@@ -1,15 +1,16 @@
 package com.project.pointage.ui.login;
 
+import android.Manifest;
 import android.app.Activity;
 
+import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import android.content.ContentValues;
-import android.content.Context;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -32,7 +33,6 @@ import com.project.location.Work_Place;
 
 import com.project.pointage.R;
 import com.project.pointage.*;
-import com.project.pointage.ui.login.LoginViewModelFactory;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -52,8 +52,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        verif = new Work_Place(this);
-        Log.w("is inside ?", "" + verif.insideZone());
+        checkPermission();
 
         loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory())
                 .get(LoginViewModel.class);
@@ -196,4 +195,33 @@ public class LoginActivity extends AppCompatActivity {
         //super.onBackPressed();
     }
 
+
+
+
+    private void checkPermission() {
+        if (ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission
+                (LoginActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            // Ask permission to the user
+            ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        }
+        else {
+            verif = new Work_Place(this);
+            // Faire ce qui est à faire quand on a accès à la localisation
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == 1) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                verif = new Work_Place(this);
+                // Faire ce qui est à faire quand on a accès à la localisation
+            }
+            else {
+                Toast.makeText(LoginActivity.this, "Vous devez autoriser l'accès à la localisation", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
 }
