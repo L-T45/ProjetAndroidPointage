@@ -1,6 +1,11 @@
 package com.project.pointage.data;
 
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+import com.project.pointage.Database;
 import com.project.pointage.data.model.LoggedInUser;
+import com.project.pointage.ui.login.LoginActivity;
 
 /**
  * Class that requests authentication and user information from the remote data source and
@@ -51,4 +56,5 @@ public class LoginRepository {
         }
         return result;
     }
+
 }
