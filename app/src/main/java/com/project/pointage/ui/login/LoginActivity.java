@@ -7,7 +7,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -32,6 +31,7 @@ import android.widget.Toast;
 import com.project.location.Work_Place;
 
 import com.project.pointage.R;
+
 import com.project.pointage.*;
 
 public class LoginActivity extends AppCompatActivity {
@@ -224,4 +224,9 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
     }
+
+    public void page1(View view) {
+        startActivity(new Intent(LoginActivity.this, Employe.class));
+    }
+
 }
