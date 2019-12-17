@@ -5,6 +5,7 @@ import android.app.Activity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -29,6 +30,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.project.pointage.R;
 import com.project.pointage.*;
 import com.project.pointage.ui.login.LoginViewModelFactory;
@@ -42,9 +48,33 @@ public class LoginActivity extends AppCompatActivity {
     private String password = null;
     private boolean isCheckUser = false;
     private Message messenger = new Message();
+    private FirebaseDatabase database2 = FirebaseDatabase.getInstance();
+    private DatabaseReference myRef = database2.getReference("Employe/ID_1/Identifiant");
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                String value = dataSnapshot.getValue(String.class);
+                AlertDialog.Builder build = new AlertDialog.Builder(LoginActivity.this);
+                build.setMessage("Value: "+value);
+                AlertDialog alert = build.create();
+                alert.show();
+                Log.d("debug", "Value is: " + value);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w("debug", "Failed to read value.", error.toException());
+            }
+        });
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory())
@@ -147,6 +177,8 @@ public class LoginActivity extends AppCompatActivity {
 
                    messenger.message(LoginActivity.this,"Login failed","Le mot de passe et/ou l'identifiant est incorrect",0);
                }
+
+
             }
         });
     }
@@ -188,4 +220,6 @@ public class LoginActivity extends AppCompatActivity {
         //super.onBackPressed();
     }
 
+
+    //READ THE DATABASE
 }
