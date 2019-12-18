@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Employer">
+    tools:context=".EmployerCompanie">
 
     <Button
         android:id="@+id/button1"
@@ -22,6 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="119dp"
         android:gravity="center"
+        android:textSize="18dp"
         android:text="Envoyer un message pour avertir votre employeur de votre arrivé/départ"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -29,9 +30,11 @@
         android:orientation="vertical" android:layout_width="match_parent"
         android:layout_height="match_parent">
         <TextView
+            android:id="@+id/employe"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_margin="5dp"
             android:textSize="20dp"
-            android:text="Page employé"/>
+            android:text="Employé: "/>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
