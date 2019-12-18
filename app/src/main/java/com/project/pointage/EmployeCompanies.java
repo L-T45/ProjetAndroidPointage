@@ -74,12 +74,12 @@ public class EmployeCompanies extends AppCompatActivity {
                             Toast.makeText(EmployeCompanies.this, "Vous devez autoriser l'envoi des sms", Toast.LENGTH_SHORT).show();
                         }
                         else{
-                            ActivityCompat.requestPermissions(EmployeCompanies.this,new String[]{Manifest.permission.SEND_SMS},1);
+                            ActivityCompat.requestPermissions(EmployeCompanies.this,new String[]{Manifest.permission.SEND_SMS},2);
                         }
                     }
                     else{
                         Log.i("debug","Autorisé");
-                        ActivityCompat.requestPermissions(EmployeCompanies.this,new String[]{Manifest.permission.SEND_SMS},1);
+                        ActivityCompat.requestPermissions(EmployeCompanies.this,new String[]{Manifest.permission.SEND_SMS},2);
 
                     }
                 }
@@ -121,7 +121,7 @@ public class EmployeCompanies extends AppCompatActivity {
         if(requestCode==2){
                 if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
                     SmsManager smsManager = SmsManager.getDefault();
-                    smsManager.sendTextMessage("0690916543", null,"L'Employé "+ preferences.getString("user",null)+" vous avertis de son arrivé ou de son départ.Vous pouvez le consulter dans la liste de départ ou d'arrivé des employés sur l'application.", null, null);
+                    smsManager.sendTextMessage("0672038043", null,"L'Employé "+ preferences.getString("user",null)+" vous avertis de son arrivé ou de son départ.Vous pouvez le consulter dans la liste de départ ou d'arrivé des employés sur l'application.", null, null);
                     message.message(EmployeCompanies.this,null,"Votre mesage a ete envoyer",0);
                 }
                 else{
