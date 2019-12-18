@@ -1,16 +1,17 @@
 package com.project.pointage.ui.login;
 
+import android.Manifest;
 import android.app.Activity;
 
+import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+
 import android.app.AlertDialog;
-import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
+import android.content.pm.PackageManager;
+
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -35,48 +36,32 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.project.pointage.R;
+
+import com.project.location.*;
 import com.project.pointage.*;
-import com.project.pointage.ui.login.LoginViewModelFactory;
 
 public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
     private Database database = new Database(LoginActivity.this);
-    private Authentification authentification = new Authentification(LoginActivity.this);
+    private Authentification authentification = null;
     private String username = null;
     private String password = null;
     private boolean isCheckUser = false;
+    private Work_Place verif;
     private Message messenger = new Message();
-    private FirebaseDatabase database2 = FirebaseDatabase.getInstance();
-    private DatabaseReference myRef = database2.getReference("Employe/ID_1/Identifiant");
 
+
+    private FirebaseDatabase database2 = FirebaseDatabase.getInstance();
+    private DatabaseReference myRef ;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                String value = dataSnapshot.getValue(String.class);
-                AlertDialog.Builder build = new AlertDialog.Builder(LoginActivity.this);
-                build.setMessage("Value: "+value);
-                AlertDialog alert = build.create();
-                alert.show();
-                Log.d("debug", "Value is: " + value);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                Log.w("debug", "Failed to read value.", error.toException());
-            }
-        });
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        checkPermission();
         loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory())
                 .get(LoginViewModel.class);
 
@@ -128,7 +113,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        TextWatcher afterTextChangedListener = new TextWatcher() {
+        final TextWatcher afterTextChangedListener = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 // ignore
@@ -163,46 +148,80 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 loadingProgressBar.setVisibility(View.VISIBLE);
+
                 username = usernameEditText.getText().toString();
                 password = passwordEditText.getText().toString();
 
-                isCheckUser = authentification.checkUser(username,password,database);
+
+                authentification = new Authentification(LoginActivity.this,username,password);
+                isCheckUser = authentification.checkUser(database);
+
                Log.i("debug","is User valid LogActivity: "+isCheckUser);
-               if(isCheckUser){
-                    loginViewModel.login(username,password);
+
+
+               //VERIFIER SI L'UTILISATEUR EST DANS LA BASE DE DONNEES
+
+                if(authentification.isNetworkAvailable(LoginActivity.this)){
+                    if(isCheckUser){
+                        Log.i("debug","The user exist inside the database. i don't need firebase");
+                        loginViewModel.login(username,password);
+                    }
+                    else if(isCheckUser==false ) {
+
+                        myRef = database2.getReference(username);
+                        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                String passwordCheck = dataSnapshot.child("password").getValue(String.class);
+
+                                if (authentification.get_hash_pasword(password).equals(passwordCheck)) {
+                                    Log.i("debug", "the user exist firebase");
+                                    authentification.createUser(dataSnapshot, database);
+                                    // Log.i("debug","Create the user "+status_new_password);
+                                    loginViewModel.login(username, password);
+                                } else {
+                                    Log.i("debug", "The user don't exist firebase");
+                                    loadingProgressBar.setVisibility(View.INVISIBLE);
+                                    messenger.message(LoginActivity.this, "Login failed", "Le mot de passe et/ou l'identifiant est incorrect", 0);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError error) {
+                                // Failed to read value
+                                Log.w("debug", "Failed to read value.", error.toException());
+                                loadingProgressBar.setVisibility(View.INVISIBLE);
+                                Log.i("debug", "Login failed can not reed the value");
+                                messenger.message(LoginActivity.this, "Login failed", "Le mot de passe et/ou l'identifiant est incorrect", 0);
+                            }
+                        });
+
+                    }
+                    else{
+                        loadingProgressBar.setVisibility(View.INVISIBLE);
+                        Log.i("debug","Login failed");
+                        messenger.message(LoginActivity.this,"Login failed","Le mot de passe et/ou l'identifiant est incorrect",0);
+                    }
                 }
-               else{
-                   loadingProgressBar.setVisibility(View.INVISIBLE);
-                   Log.i("debug","Login failed");
-
-                   messenger.message(LoginActivity.this,"Login failed","Le mot de passe et/ou l'identifiant est incorrect",0);
-               }
-
-
+                else{
+                    loadingProgressBar.setVisibility(View.INVISIBLE);
+                    messenger.message(LoginActivity.this,"Connexion internet","Activer votre connexion internet.",0);
+                }
             }
         });
     }
 
+
+
+
     private void updateUiWithUser(LoggedInUserView model) {
-
-
-        //SharedPReferences
 
        // String welcome = getString(R.string.welcome) + model.getDisplayName();
         // TODO : initiate successful logged in experience
        // Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
 
-        Intent intent = null ;
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        int type = pref.getInt("fonction",-1);
-        Log.i("debug","Valeur de la fonction: "+type);
-        if(type == 1){
-            intent = new Intent(this,Employer.class);
-        }
-        else if(type == 0){
-            intent = new Intent(this,Employeur.class);
-        }
-        intent.putExtra("user",pref.getString("user",null));
+        Intent intent = new Intent(this, EmployeCompanies.class);
         startActivity(intent);
     }
 
@@ -221,5 +240,33 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    //READ THE DATABASE
+    //ADD
+    private void checkPermission() {
+        if (ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission
+                (LoginActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            // Ask permission to the user
+            ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        }
+        /*else {
+            verif = new Work_Place(this);
+            Toast.makeText(this, " tu est dans la zone ou pas "+verif.insideZone(), Toast.LENGTH_SHORT).show();
+            // Faire ce qui est à faire quand on a accès à la localisation
+        }*/
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == 1) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                verif = new Work_Place(this);
+                // Faire ce qui est à faire quand on a accès à la localisation
+            }
+            else {
+
+                Toast.makeText(LoginActivity.this, "Vous devez autoriser l'accès à la localisation", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
 }
