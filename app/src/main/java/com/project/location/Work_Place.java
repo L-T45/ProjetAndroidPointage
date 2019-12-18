@@ -22,6 +22,11 @@ public class Work_Place {
 
     public boolean insideZone() {
         return (this.current_location.getLat() >= this.lat_se  && this.current_location.getLat() <= this.lat_no &&
-                this.current_location.getLon() >= this.lon_no  && this.current_location.getLon() <= this.lat_se);
+                this.current_location.getLon() >= this.lon_no  && this.current_location.getLon() <= this.lon_se);
+    }
+
+    public boolean update_location() {
+        current_location.getLocation();
+        return insideZone();
     }
 }
