@@ -148,56 +148,67 @@ public class LoginActivity extends AppCompatActivity {
                Log.i("debug","is User valid LogActivity: "+isCheckUser);
 
                //VERIFIER SI L'UTILISATEUR EST DANS LA BASE DE DONNEES
-                if(isCheckUser){
-                    Log.i("debug","The user exist inside the database. i don't need firebase");
-                    loginViewModel.login(username,password);
-                }
-                else if(isCheckUser==false){
-                myRef = database2.getReference(username);
-                myRef.addListenerForSingleValueEvent(new ValueEventListener() {
 
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        String passwordCheck = dataSnapshot.child("password").getValue(String.class);
-
-                        if(authentification.get_hash_pasword(password).equals(passwordCheck)){
-                            Log.i("debug","the user exist firebase");
-                            authentification.createUser(dataSnapshot,database);
-                            // Log.i("debug","Create the user "+status_new_password);
-                            loginViewModel.login(username,password);
-                        }
-                        else{
-                            Log.i("debug","The user don't exist firebase");
-                            loadingProgressBar.setVisibility(View.INVISIBLE);
-                            messenger.message(LoginActivity.this,"Login failed","Le mot de passe et/ou l'identifiant est incorrect",0);
-                        }
+                if(authentification.isNetworkAvailable(LoginActivity.this)){
+                    if(isCheckUser){
+                        Log.i("debug","The user exist inside the database. i don't need firebase");
+                        loginViewModel.login(username,password);
                     }
-                    @Override
-                    public void onCancelled(DatabaseError error) {
-                        // Failed to read value
-                        Log.w("debug", "Failed to read value.", error.toException());
+                    else if(isCheckUser==false ) {
+
+                        myRef = database2.getReference(username);
+                        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                String passwordCheck = dataSnapshot.child("password").getValue(String.class);
+
+                                if (authentification.get_hash_pasword(password).equals(passwordCheck)) {
+                                    Log.i("debug", "the user exist firebase");
+                                    authentification.createUser(dataSnapshot, database);
+                                    // Log.i("debug","Create the user "+status_new_password);
+                                    loginViewModel.login(username, password);
+                                } else {
+                                    Log.i("debug", "The user don't exist firebase");
+                                    loadingProgressBar.setVisibility(View.INVISIBLE);
+                                    messenger.message(LoginActivity.this, "Login failed", "Le mot de passe et/ou l'identifiant est incorrect", 0);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError error) {
+                                // Failed to read value
+                                Log.w("debug", "Failed to read value.", error.toException());
+                                loadingProgressBar.setVisibility(View.INVISIBLE);
+                                Log.i("debug", "Login failed can not reed the value");
+                                messenger.message(LoginActivity.this, "Login failed", "Le mot de passe et/ou l'identifiant est incorrect", 0);
+                            }
+                        });
+
+                    }
+                    else{
                         loadingProgressBar.setVisibility(View.INVISIBLE);
-                        Log.i("debug","Login failed can not reed the value");
+                        Log.i("debug","Login failed");
                         messenger.message(LoginActivity.this,"Login failed","Le mot de passe et/ou l'identifiant est incorrect",0);
                     }
-                });
-
-               }
-               else{
-                   loadingProgressBar.setVisibility(View.INVISIBLE);
-                   Log.i("debug","Login failed");
-                   messenger.message(LoginActivity.this,"Login failed","Le mot de passe et/ou l'identifiant est incorrect",0);
-               }
+                }
+                else{
+                    loadingProgressBar.setVisibility(View.INVISIBLE);
+                    messenger.message(LoginActivity.this,"Connexion internet","Activer votre connexion internet.",0);
+                }
             }
         });
     }
+
+
+
 
     private void updateUiWithUser(LoggedInUserView model) {
 
        // String welcome = getString(R.string.welcome) + model.getDisplayName();
         // TODO : initiate successful logged in experience
        // Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(this, EmployerCompanie.class);
+        Intent intent = new Intent(this, EmployeCompanies.class);
         startActivity(intent);
     }
 
@@ -226,11 +237,11 @@ public class LoginActivity extends AppCompatActivity {
             // Ask permission to the user
             ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
-        else {
+        /*else {
             verif = new Work_Place(this);
             Toast.makeText(this, " tu est dans la zone ou pas "+verif.insideZone(), Toast.LENGTH_SHORT).show();
             // Faire ce qui est à faire quand on a accès à la localisation
-        }
+        }*/
     }
 
     @Override
@@ -241,6 +252,7 @@ public class LoginActivity extends AppCompatActivity {
                 // Faire ce qui est à faire quand on a accès à la localisation
             }
             else {
+
                 Toast.makeText(LoginActivity.this, "Vous devez autoriser l'accès à la localisation", Toast.LENGTH_LONG).show();
             }
         }
