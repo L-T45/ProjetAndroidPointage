@@ -33,6 +33,7 @@ public class EmployeCompanies extends AppCompatActivity {
     private Work_Place work_place = null;
     private Message message = new Message();
     private ConnectivityManager connectivityManager;
+    private Button sendMessage;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,25 +45,26 @@ public class EmployeCompanies extends AppCompatActivity {
         textView.setText("Employe: "+preferences.getString("user",null));
         Log.i("debug"," Votre nom: "+preferences.getString("user",null));
         connectivityManager = ((ConnectivityManager) EmployeCompanies.this.getSystemService(Context.CONNECTIVITY_SERVICE));
-        Button sendMessage = (Button) findViewById(R.id.button1);
+        sendMessage = (Button) findViewById(R.id.button1);
         final TextView textView1 = (TextView) findViewById(R.id.textView2);
 
-        if(work_place.insideZone()){
+        if(work_place.update_location()){
             sendMessage.setText("Envoyer");
-            textView1.setEnabled(false);
+            textView1.setVisibility(View.INVISIBLE);
         }else{
             sendMessage.setText("Actualiser");
-            textView1.setEnabled(true);
+            textView1.setVisibility(View.VISIBLE);
         }
 
         sendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                if(!work_place.insideZone()){
+                if(work_place.insideZone()== false){
                         Log.i("debug","Actualiser votre position");
                         if(connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected()){
                             work_place.update_location();
+
                         }else{
                          message.message(EmployeCompanies.this,"Connexion Internet","Activer votre connexion internet.",0);
                         }
@@ -82,6 +84,16 @@ public class EmployeCompanies extends AppCompatActivity {
                         ActivityCompat.requestPermissions(EmployeCompanies.this,new String[]{Manifest.permission.SEND_SMS},2);
 
                     }
+
+                }
+
+
+                if(work_place.update_location()){
+                    sendMessage.setText("Envoyer");
+                    textView1.setVisibility(View.INVISIBLE);
+                }else{
+                    sendMessage.setText("Actualiser");
+                    textView1.setVisibility(View.VISIBLE);
                 }
 
 
@@ -121,11 +133,11 @@ public class EmployeCompanies extends AppCompatActivity {
         if(requestCode==2){
                 if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
                     SmsManager smsManager = SmsManager.getDefault();
-                    smsManager.sendTextMessage("0672038043", null,"L'Employé "+ preferences.getString("user",null)+" vous avertis de son arrivé ou de son départ.Vous pouvez le consulter dans la liste de départ ou d'arrivé des employés sur l'application.", null, null);
-                    message.message(EmployeCompanies.this,null,"Votre mesage a ete envoyer",0);
+                    smsManager.sendTextMessage("0766289595", null,"L'Employé "+ preferences.getString("user",null)+" vous avertis de son arrivé ou de son départ.Vous pouvez le consulter dans la liste de départ ou d'arrivé des employés sur l'application.", null, null);
+                    message.message(EmployeCompanies.this,"Confirmation","Votre mesage a ete envoye.",0);
                 }
                 else{
-                    message.message(EmployeCompanies.this,null,"Votre message n'a pas ete envoye",0);
+                    message.message(EmployeCompanies.this,"Echec","Votre message n'a pas ete envoye",0);
                 }
         }
         else{

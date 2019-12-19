@@ -1,6 +1,7 @@
 package com.project.location;
 
 import android.content.Context;
+import android.util.Log;
 
 public class Work_Place {
 
@@ -27,6 +28,7 @@ public class Work_Place {
 
     public boolean update_location() {
         current_location.getLocation();
+        Log.i("debug","Current position: "+current_location.getLat()+" "+current_location.getLon());
         return insideZone();
     }
 }
