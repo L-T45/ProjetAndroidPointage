@@ -278,8 +278,4 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    public void page1(View view) {
-        startActivity(new Intent(LoginActivity.this, Employe.class));
-    }
-
 }
