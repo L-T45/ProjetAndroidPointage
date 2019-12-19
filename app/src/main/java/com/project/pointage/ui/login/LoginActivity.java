@@ -8,9 +8,11 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 
+
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+
 
 import android.os.Bundle;
 
@@ -30,6 +32,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.project.location.Work_Place;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -43,6 +46,7 @@ import com.project.pointage.*;
 public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
+
     private Database database = new Database(LoginActivity.this);
     private Authentification authentification = null;
     private String username = null;
@@ -52,8 +56,11 @@ public class LoginActivity extends AppCompatActivity {
     private Message messenger = new Message();
 
 
+
     private FirebaseDatabase database2 = FirebaseDatabase.getInstance();
     private DatabaseReference myRef ;
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,7 +68,9 @@ public class LoginActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         checkPermission();
+
         loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory())
                 .get(LoginViewModel.class);
 
@@ -239,8 +248,6 @@ public class LoginActivity extends AppCompatActivity {
         //super.onBackPressed();
     }
 
-
-    //ADD
     private void checkPermission() {
         if (ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission
@@ -254,6 +261,7 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(this, " tu est dans la zone ou pas "+verif.insideZone(), Toast.LENGTH_SHORT).show();
             // Faire ce qui est à faire quand on a accès à la localisation
         }*/
+
     }
 
     @Override
@@ -264,9 +272,14 @@ public class LoginActivity extends AppCompatActivity {
                 // Faire ce qui est à faire quand on a accès à la localisation
             }
             else {
-
                 Toast.makeText(LoginActivity.this, "Vous devez autoriser l'accès à la localisation", Toast.LENGTH_LONG).show();
             }
         }
     }
+
+
+    public void page1(View view) {
+        startActivity(new Intent(LoginActivity.this, Employe.class));
+    }
+
 }

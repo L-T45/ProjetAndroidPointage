@@ -1,6 +1,7 @@
 package com.project.location;
 
 import android.content.Context;
+
 import android.util.Log;
 
 public class Work_Place {
@@ -18,15 +19,12 @@ public class Work_Place {
         this.lat_se = 50.089477;
         this.lon_se = 3.439677;
 
-
-
-
-
         this.current_location = new Localisation(context);
     }
 
     public boolean insideZone() {
         return (this.current_location.getLat() >= this.lat_se  && this.current_location.getLat() <= this.lat_no &&
+
                 this.current_location.getLon() >= this.lon_no  && this.current_location.getLon() <= this.lon_se);
     }
 
