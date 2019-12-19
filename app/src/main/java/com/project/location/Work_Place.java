@@ -12,11 +12,14 @@ public class Work_Place {
     private Localisation current_location;
 
     public Work_Place(Context context) {
-        this.lat_no = 50.090109;
-        this.lon_no = 3.439056;
 
-        this.lat_se = 50.089477;
-        this.lon_se = 3.439677;
+        this.lat_no = 49.8370388;
+        this.lon_no = 3.300165;
+
+        this.lat_se = 49.836805;
+        this.lon_se = 3.3004379;
+
+
 
         this.current_location = new Localisation(context);
     }
