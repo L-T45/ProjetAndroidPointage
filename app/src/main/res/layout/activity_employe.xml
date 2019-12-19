@@ -11,25 +11,15 @@
         android:id="@+id/button1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="131dp"
         android:text="Envoyer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        tools:layout_editor_absoluteY="295dp" />
 
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="119dp"
-        android:gravity="center"
-        android:text="Envoyer un message pour avertir votre employeur de votre arrivé/départ"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"/>
 
     <TextView
         android:id="@+id/textView"
@@ -53,6 +43,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />
+
     <LinearLayout
         android:orientation="vertical" android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -67,6 +58,6 @@
 
 
     </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
 
+</androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -24,7 +24,6 @@ public class Localisation extends AppCompatActivity {
     LocationListener locationListener;
 
 
-
     public Localisation(Context context) {
         this.lat = 0;
         this.lon = 0;
@@ -39,35 +38,40 @@ public class Localisation extends AppCompatActivity {
                 locationManager.removeUpdates(locationListener);
 
 
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {}
+                @Override
+                public void onStatusChanged (String provider,int status, Bundle extras){
+                }
 
-            @Override
-            public void onProviderEnabled(String provider) {}
+                @Override
+                public void onProviderEnabled (String provider){
+                }
 
-            @Override
-            public void onProviderDisabled(String provider) {}
+                @Override
+                public void onProviderDisabled (String provider){
+                }
+            }
+
+            ;
+
+            getLocation();
         };
-        getLocation();
-    }
 
 
+        public void getLocation() {
+            if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission
+                    (mContext, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-
-    public void getLocation() {
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission
-                (mContext, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 100, locationListener);
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 100, locationListener);
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 100, locationListener);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 100, locationListener);
+            }
         }
-    }
-    public double getLat() {
-        return this.lat;
-    }
+        public double getLat () {
+            return this.lat;
+        }
 
-    public double getLon() {
-        return this.lon;
+        public double getLon () {
+            return this.lon;
+        }
     }
 }
