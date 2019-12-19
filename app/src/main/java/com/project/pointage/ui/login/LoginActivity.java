@@ -9,7 +9,6 @@ import androidx.lifecycle.ViewModelProviders;
 
 
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 
@@ -20,7 +19,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -32,7 +30,6 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.project.location.Work_Place;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -52,7 +49,6 @@ public class LoginActivity extends AppCompatActivity {
     private String username = null;
     private String password = null;
     private boolean isCheckUser = false;
-    private Work_Place verif;
     private Message messenger = new Message();
 
 
@@ -268,7 +264,6 @@ public class LoginActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == 1) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                verif = new Work_Place(this);
                 // Faire ce qui est à faire quand on a accès à la localisation
             }
             else {
