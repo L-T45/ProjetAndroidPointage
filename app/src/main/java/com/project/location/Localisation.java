@@ -36,10 +36,10 @@ public class Localisation extends AppCompatActivity {
                 lat = location.getLatitude();
                 lon = location.getLongitude();
                 locationManager.removeUpdates(locationListener);
-
+            }
 
                 @Override
-                public void onStatusChanged (String provider,int status, Bundle extras){
+                public void onStatusChanged(String provider,int status, Bundle extras){
                 }
 
                 @Override
@@ -49,12 +49,10 @@ public class Localisation extends AppCompatActivity {
                 @Override
                 public void onProviderDisabled (String provider){
                 }
-            }
-
-            ;
+            };
 
             getLocation();
-        };
+        }
 
 
         public void getLocation() {
@@ -66,12 +64,11 @@ public class Localisation extends AppCompatActivity {
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 100, locationListener);
             }
         }
-        public double getLat () {
+        public double getLat(){
             return this.lat;
         }
 
-        public double getLon () {
+        public double getLon(){
             return this.lon;
         }
     }
-}
