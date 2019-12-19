@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "156846943965",
+    "firebase_url": "https://android-app-58c33.firebaseio.com",
+    "project_id": "android-app-58c33",
+    "storage_bucket": "android-app-58c33.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:156846943965:android:5b85ecbbf6d507aea73534",
+        "android_client_info": {
+          "package_name": "com.project.pointage"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "156846943965-om6mf65d11e7m8c848s9kd2897safvnp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGZWZDswHCbiTvvYpSTN5MCU2Y_OaPaVg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "156846943965-om6mf65d11e7m8c848s9kd2897safvnp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

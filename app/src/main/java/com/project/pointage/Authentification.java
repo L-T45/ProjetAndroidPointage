@@ -1,21 +1,32 @@
 package com.project.pointage;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
+
+
+import com.google.firebase.database.DataSnapshot;
+
 import java.security.MessageDigest;
 
 
 public class Authentification {
 
 
-    private Context auth_context  ;
+    private Context auth_context;
+    private String new_password;
+    private String username;
+    private boolean status_new_password = false;
 
-    public Authentification(Context context){
+    public Authentification(Context context,String user,String password){
         this.auth_context = context;
+        this.new_password = password;
+        this.username =user;
     }
 
     public String get_hash_pasword(String password){
@@ -49,8 +60,11 @@ public class Authentification {
         Log.i("debug","Create the session: "+preferences.getString("user",null));
     }
 
-    public boolean checkUser(String username,String password,Database database){
+    public boolean checkUser(Database database){
         boolean new_password;
+        String username = getUsername();
+        String password = getPassword();
+
         SQLiteDatabase sqLiteDatabase = database.getReadableDatabase();
         String request = "SELECT name, type FROM employe WHERE username='"+username+"' AND password='"+get_hash_pasword(password)+"';";
         Cursor cursor  = sqLiteDatabase.rawQuery(request,null);
@@ -62,13 +76,41 @@ public class Authentification {
                     // Do something Here with values
                 } while(cursor.moveToNext());
             }
-            new_password = true;
-        }else{
-            new_password = false;
+            status_new_password = !status_new_password;
         }
 
-        Log.i("debug","isCheckUser: "+new_password+" "+cursor.getCount());
-        return new_password;
+        Log.i("debug","isCheckUser:  "+cursor.getCount()+" "+status_new_password);
+        return status_new_password;
     }
 
+
+    public void createUser(DataSnapshot dataSnapshot,Database database){
+        Log.i("debug","Create the user inside the database Firebase");
+        String name = dataSnapshot.child("nom").getValue(String.class);
+        String firstname = dataSnapshot.child("prenom").getValue(String.class);
+        int type = dataSnapshot.child("fonction").getValue(int.class);
+        SQLiteDatabase sqLiteDatabase = database.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("username",this.getUsername());
+        contentValues.put("password",this.get_hash_pasword(getPassword()));
+        contentValues.put("name",name);
+        contentValues.put("firstname",firstname);
+        contentValues.put("type",type);
+        sqLiteDatabase.insert("employe",null,contentValues);
+        Session(name,type);
+    }
+
+    public String getUsername(){
+        return this.username;
+    }
+
+    public String getPassword(){
+        return this.new_password;
+    }
+
+    public boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
+        return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
+    }
 }
+
