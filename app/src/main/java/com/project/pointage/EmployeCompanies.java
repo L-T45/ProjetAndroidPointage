@@ -2,14 +2,12 @@ package com.project.pointage;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
@@ -25,6 +23,9 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import com.project.location.*;
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class EmployeCompanies extends AppCompatActivity {
 
@@ -45,8 +46,8 @@ public class EmployeCompanies extends AppCompatActivity {
         textView.setText("Employe: "+preferences.getString("user",null));
         Log.i("debug"," Votre nom: "+preferences.getString("user",null));
         connectivityManager = ((ConnectivityManager) EmployeCompanies.this.getSystemService(Context.CONNECTIVITY_SERVICE));
-        sendMessage = (Button) findViewById(R.id.button1);
-        final TextView textView1 = (TextView) findViewById(R.id.textView2);
+        sendMessage = findViewById(R.id.button1);
+        final TextView textView1 = findViewById(R.id.textView2);
 
         if(work_place.update_location()){
             sendMessage.setText("Envoyer");
@@ -115,7 +116,7 @@ public class EmployeCompanies extends AppCompatActivity {
         }
 
         this.doubleBackToExitPressedOnce = true;
-        Toast.makeText(this, "Please click BACK again to deconnect", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Please click BACK again to disconnect", Toast.LENGTH_SHORT).show();
 
         new Handler().postDelayed(new Runnable() {
 
@@ -128,16 +129,22 @@ public class EmployeCompanies extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        //super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if(requestCode==2){
                 if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
                     SmsManager smsManager = SmsManager.getDefault();
-                    smsManager.sendTextMessage("0672038043", null,"L'Employé "+ preferences.getString("user",null)+" vous avertis de son arrivée ou de son départ.", null, null);
-                    message.message(EmployeCompanies.this,"Confirmation","Votre message a ete envoye.",0);
+
+                    SimpleDateFormat format = new SimpleDateFormat("HH");
+                    int hour = Integer.parseInt(format.format(new Date()));
+
+                    String msg = "L'employé "+ preferences.getString("user",null)+" vous avertit de son ";
+                    msg += (hour < 13) ? "arrivée." : "départ.";
+
+                    smsManager.sendTextMessage("**********", null, msg, null, null);
+                    message.message(EmployeCompanies.this,"Confirmation","Votre message a été envoyé.",0);
                 }
                 else{
-                    message.message(EmployeCompanies.this,"Echec","Votre message n'a pas ete envoye",0);
+                    message.message(EmployeCompanies.this,"Echec","Votre message n'a pas été envoyé.",0);
                 }
         }
         else{
