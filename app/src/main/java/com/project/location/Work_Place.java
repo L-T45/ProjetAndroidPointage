@@ -28,9 +28,7 @@ public class Work_Place {
                 this.current_location.getLon() >= this.lon_no  && this.current_location.getLon() <= this.lon_se);
     }
 
-    public boolean update_location() {
+    public void update_location() {
         current_location.getLocation();
-        Log.i("debug","Current position: "+current_location.getLat()+" "+current_location.getLon());
-        return insideZone();
     }
 }

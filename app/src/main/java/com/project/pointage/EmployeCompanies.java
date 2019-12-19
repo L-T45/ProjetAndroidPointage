@@ -35,6 +35,7 @@ public class EmployeCompanies extends AppCompatActivity {
     private Message message = new Message();
     private ConnectivityManager connectivityManager;
     private Button sendMessage;
+    private TextView textView1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -42,18 +43,18 @@ public class EmployeCompanies extends AppCompatActivity {
         setContentView(R.layout.activity_employe);
         work_place = new Work_Place(EmployeCompanies.this);
         preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        TextView textView = (TextView) findViewById(R.id.employe);
+        TextView textView = findViewById(R.id.employe);
         textView.setText("Employe: "+preferences.getString("user",null));
         Log.i("debug"," Votre nom: "+preferences.getString("user",null));
         connectivityManager = ((ConnectivityManager) EmployeCompanies.this.getSystemService(Context.CONNECTIVITY_SERVICE));
-        sendMessage = findViewById(R.id.button1);
-        final TextView textView1 = findViewById(R.id.textView2);
+        sendMessage = findViewById(R.id.send_sms);
+        textView1 = findViewById(R.id.permission_asking);
 
-        if(work_place.update_location()){
+        if(work_place.insideZone()){
             sendMessage.setText("Envoyer");
             textView1.setVisibility(View.INVISIBLE);
         }else{
-            sendMessage.setText("Actualiser");
+            sendMessage.setText("Vérifier la position");
             textView1.setVisibility(View.VISIBLE);
         }
 
@@ -61,39 +62,34 @@ public class EmployeCompanies extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                if(work_place.insideZone()== false){
-                        Log.i("debug","Actualiser votre position");
-                        if(connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected()){
-                            work_place.update_location();
+                if (sendMessage.getText() == "Vérifier la position") {
+                    if(!work_place.insideZone()){
 
-                        }else{
-                         message.message(EmployeCompanies.this,"Connexion Internet","Activer votre connexion internet.",0);
+                        if (ActivityCompat.checkSelfPermission(EmployeCompanies.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission
+                                (EmployeCompanies.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                            ActivityCompat.requestPermissions(EmployeCompanies.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
                         }
+                        else {
+                            position();
+                        }
+                    } else if (work_place.insideZone()) {
+                        sendMessage.setText("Envoyer");
+                        textView1.setVisibility(View.INVISIBLE);
+                    }
                 }
+
                 else{
                     Log.i("debug","Envoyer votre ");
                     if(ContextCompat.checkSelfPermission(EmployeCompanies.this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
-
-                        ActivityCompat.requestPermissions(EmployeCompanies.this,new String[]{Manifest.permission.SEND_SMS},2);
+                        ActivityCompat.requestPermissions(EmployeCompanies.this, new String[]{Manifest.permission.SEND_SMS},2);
                     }
                     else{
                         Log.i("debug","Autorisé");
                         send();
-
                     }
-
                 }
-
-
-                if(work_place.update_location()){
-                    sendMessage.setText("Envoyer");
-                    textView1.setVisibility(View.INVISIBLE);
-                }else{
-                    sendMessage.setText("Actualiser");
-                    textView1.setVisibility(View.VISIBLE);
-                }
-
-
             }
         });
     }
@@ -126,7 +122,16 @@ public class EmployeCompanies extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
-        if(requestCode==2){
+        if (requestCode == 1) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                position();
+            }
+            else {
+                Toast.makeText(EmployeCompanies.this, "Vous devez autoriser l'accès à la localisation", Toast.LENGTH_LONG).show();
+            }
+        }
+
+        else if(requestCode==2){
                 if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
                     send();
                 }
@@ -136,7 +141,7 @@ public class EmployeCompanies extends AppCompatActivity {
                 }
         }
         else{
-                Log.i("debug","Probleme message");
+                Log.i("debug","Probleme permission");
         }
 
     }
@@ -152,5 +157,30 @@ public class EmployeCompanies extends AppCompatActivity {
 
         smsManager.sendTextMessage("0668475292", null, msg, null, null);
         message.message(EmployeCompanies.this,"Confirmation","Votre message a été envoyé.",0);
+        sendMessage.setEnabled(false);
+        sendMessage.setText("Message envoyé");
+    }
+
+    private void position() {
+        Log.i("debug","Actualiser votre position");
+        if(connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected()){
+            work_place.update_location();
+            sendMessage.setEnabled(false);
+            sendMessage.setText("Patientez...");
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    if (work_place.insideZone()) {
+                        sendMessage.setText("Envoyer");
+                        textView1.setVisibility(View.INVISIBLE);
+                    }
+                    else sendMessage.setText("Vérifier la position");
+                    sendMessage.setEnabled(true);
+                }
+            }, 3000);   //3 seconds
+        }
+        else {
+            message.message(EmployeCompanies.this,"Connexion Internet","Activer votre connexion internet.",0);
+        }
     }
 }
