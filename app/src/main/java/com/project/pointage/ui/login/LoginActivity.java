@@ -65,8 +65,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        checkPermission();
-
         loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory())
                 .get(LoginViewModel.class);
 
@@ -244,32 +242,10 @@ public class LoginActivity extends AppCompatActivity {
         //super.onBackPressed();
     }
 
-    private void checkPermission() {
-        if (ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission
-                (LoginActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            // Ask permission to the user
-            ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-        }
-        /*else {
-            verif = new Work_Place(this);
-            Toast.makeText(this, " tu est dans la zone ou pas "+verif.insideZone(), Toast.LENGTH_SHORT).show();
-            // Faire ce qui est à faire quand on a accès à la localisation
-        }*/
-
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == 1) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Faire ce qui est à faire quand on a accès à la localisation
-            }
-            else {
-                Toast.makeText(LoginActivity.this, "Vous devez autoriser l'accès à la localisation", Toast.LENGTH_LONG).show();
-            }
-        }
+
     }
 
 
