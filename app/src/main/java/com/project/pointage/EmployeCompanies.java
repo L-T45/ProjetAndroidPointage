@@ -72,17 +72,13 @@ public class EmployeCompanies extends AppCompatActivity {
                 }
                 else{
                     Log.i("debug","Envoyer votre ");
-                    if(ContextCompat.checkSelfPermission(EmployeCompanies.this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED){
-                        if(ActivityCompat.shouldShowRequestPermissionRationale(EmployeCompanies.this,Manifest.permission.SEND_SMS)){
-                            Toast.makeText(EmployeCompanies.this, "Vous devez autoriser l'envoi des sms", Toast.LENGTH_SHORT).show();
-                        }
-                        else{
-                            ActivityCompat.requestPermissions(EmployeCompanies.this,new String[]{Manifest.permission.SEND_SMS},2);
-                        }
+                    if(ContextCompat.checkSelfPermission(EmployeCompanies.this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+
+                        ActivityCompat.requestPermissions(EmployeCompanies.this,new String[]{Manifest.permission.SEND_SMS},2);
                     }
                     else{
                         Log.i("debug","Autorisé");
-                        ActivityCompat.requestPermissions(EmployeCompanies.this,new String[]{Manifest.permission.SEND_SMS},2);
+                        send();
 
                     }
 
@@ -132,18 +128,10 @@ public class EmployeCompanies extends AppCompatActivity {
 
         if(requestCode==2){
                 if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
-                    SmsManager smsManager = SmsManager.getDefault();
-
-                    SimpleDateFormat format = new SimpleDateFormat("HH");
-                    int hour = Integer.parseInt(format.format(new Date()));
-
-                    String msg = "L'employé "+ preferences.getString("user",null)+" vous avertit de son ";
-                    msg += (hour < 13) ? "arrivée." : "départ.";
-
-                    smsManager.sendTextMessage("**********", null, msg, null, null);
-                    message.message(EmployeCompanies.this,"Confirmation","Votre message a été envoyé.",0);
+                    send();
                 }
                 else{
+                    Toast.makeText(EmployeCompanies.this, "Vous devez autoriser l'envoi des sms", Toast.LENGTH_SHORT).show();
                     message.message(EmployeCompanies.this,"Echec","Votre message n'a pas été envoyé.",0);
                 }
         }
@@ -151,5 +139,18 @@ public class EmployeCompanies extends AppCompatActivity {
                 Log.i("debug","Probleme message");
         }
 
+    }
+
+    private void send() {
+        SmsManager smsManager = SmsManager.getDefault();
+
+        SimpleDateFormat format = new SimpleDateFormat("HH");
+        int hour = Integer.parseInt(format.format(new Date()));
+
+        String msg = "L'employé "+ preferences.getString("user",null)+" vous avertit de son ";
+        msg += (hour < 13) ? "arrivée." : "départ.";
+
+        smsManager.sendTextMessage("**********", null, msg, null, null);
+        message.message(EmployeCompanies.this,"Confirmation","Votre message a été envoyé.",0);
     }
 }
