@@ -16,8 +16,8 @@ public class Work_Place {
         this.lat_no = 49.838197;
         this.lon_no = 3.296236;
 
-        this.lat_se = 49.835814;
-        this.lon_se = 3.305382;
+        this.lat_se = 49.833461;
+        this.lon_se = 3.305178;
 
         this.current_location = new Localisation(context);
     }
