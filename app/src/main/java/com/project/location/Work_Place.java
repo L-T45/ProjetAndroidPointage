@@ -2,30 +2,65 @@ package com.project.location;
 
 import android.content.Context;
 
+import android.location.Location;
 import android.util.Log;
+import android.widget.Toast;
+
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 
 public class Work_Place {
 
-    private double lat_no;
-    private double lat_se;
-    private double lon_no;
-    private double lon_se;
+    private final double latitude;
+    private final double longitude;
+
+    private final int radius;
+
+    private float [] distance;
+
     private Localisation current_location;
 
-    public Work_Place(Context context) {
-        this.lat_no = 49.838197;
-        this.lon_no = 3.296236;
+    private Context context;
 
-        this.lat_se = 49.833461;
-        this.lon_se = 3.305178;
+    public Work_Place(Context context) {
+        this.latitude = 49.836933;
+        this.longitude = 3.300499;
+
+        this.distance = new float[5];
+        this.radius = 100;
 
         this.current_location = new Localisation(context);
+
+        this.context = context;
+        current_location.getLocation();
+        this.calculDistance();
+    }
+
+    public void calculDistance() {
+        Location.distanceBetween(this.latitude, this.longitude, this.current_location.getLat(), this.current_location.getLon(), this.distance);
+        Log.w("distance", "" + this.distance[0]);
     }
 
     public boolean insideZone() {
-        return (this.current_location.getLat() >= this.lat_se  && this.current_location.getLat() <= this.lat_no &&
+        this.calculDistance();
+        if (distance[0] > radius) {
 
-                this.current_location.getLon() >= this.lon_no  && this.current_location.getLon() <= this.lon_se);
+            String distanceValue = "";
+
+            if (distance[0] > 1000) {
+                DecimalFormat df = new DecimalFormat("#.##");
+                df.setRoundingMode(RoundingMode.HALF_UP);
+                distanceValue = df.format(distance[0] / 1000) + "km ";
+            }
+            else {
+                distanceValue = (int)distance[0] + "m ";
+            }
+
+            Toast.makeText(context, "Vous êtes à " + distanceValue + "de votre lieu de travail", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        else
+            return true;
     }
 
     public void update_location() {
