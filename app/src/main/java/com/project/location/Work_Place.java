@@ -23,8 +23,8 @@ public class Work_Place {
     private Context context;
 
     public Work_Place(Context context) {
-        this.latitude = 50.089869;
-        this.longitude = 3.439362;
+        this.latitude = 49.836933;
+        this.longitude = 3.300499;
 
         this.distance = new float[5];
         this.radius = 100;
