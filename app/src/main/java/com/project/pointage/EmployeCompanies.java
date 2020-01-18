@@ -37,6 +37,8 @@ public class EmployeCompanies extends AppCompatActivity {
     private Button sendMessage;
     private TextView textView1;
 
+    private String employeeNumber;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,34 +52,27 @@ public class EmployeCompanies extends AppCompatActivity {
         sendMessage = findViewById(R.id.send_sms);
         textView1 = findViewById(R.id.permission_asking);
 
-        if(work_place.insideZone()){
-            sendMessage.setText("Envoyer");
-            textView1.setVisibility(View.INVISIBLE);
-        }else{
-            sendMessage.setText("Vérifier la position");
-            textView1.setVisibility(View.VISIBLE);
-        }
+        employeeNumber = "0668475292";
+
+        sendMessage.setText("Vérifier la position");
+        textView1.setVisibility(View.VISIBLE);
 
         sendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 if (sendMessage.getText() == "Vérifier la position") {
-                    if(!work_place.insideZone()){
 
-                        if (ActivityCompat.checkSelfPermission(EmployeCompanies.this, Manifest.permission.ACCESS_FINE_LOCATION)
-                                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission
-                                (EmployeCompanies.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.checkSelfPermission(EmployeCompanies.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                            != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission
+                            (EmployeCompanies.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-                            ActivityCompat.requestPermissions(EmployeCompanies.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-                        }
-                        else {
-                            position();
-                        }
-                    } else if (work_place.insideZone()) {
-                        sendMessage.setText("Envoyer");
-                        textView1.setVisibility(View.INVISIBLE);
+                        ActivityCompat.requestPermissions(EmployeCompanies.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
                     }
+                    else {
+                        position();
+                    }
+
                 }
 
                 else{
@@ -155,7 +150,7 @@ public class EmployeCompanies extends AppCompatActivity {
         String msg = "L'employé "+ preferences.getString("user",null)+" vous avertit de son ";
         msg += (hour < 13) ? "arrivée." : "départ.";
 
-        smsManager.sendTextMessage("0668475292", null, msg, null, null);
+        smsManager.sendTextMessage(employeeNumber, null, msg, null, null);
         message.message(EmployeCompanies.this,"Confirmation","Votre message a été envoyé.",0);
         sendMessage.setEnabled(false);
         sendMessage.setText("Message envoyé");
@@ -168,13 +163,15 @@ public class EmployeCompanies extends AppCompatActivity {
             sendMessage.setEnabled(false);
             sendMessage.setText("Patientez...");
             Handler handler = new Handler();
+
             handler.postDelayed(new Runnable() {
                 public void run() {
                     if (work_place.insideZone()) {
                         sendMessage.setText("Envoyer");
                         textView1.setVisibility(View.INVISIBLE);
                     }
-                    else sendMessage.setText("Vérifier la position");
+                    else
+                        sendMessage.setText("Vérifier la position");
                     sendMessage.setEnabled(true);
                 }
             }, 3000);   //3 seconds
