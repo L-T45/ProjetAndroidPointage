@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 
 
@@ -43,12 +44,9 @@ import com.project.pointage.*;
 public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
-
-    private Database database = new Database(LoginActivity.this);
     private Authentification authentification = null;
     private String username = null;
     private String password = null;
-    private boolean isCheckUser = false;
     private Message messenger = new Message();
 
 
@@ -155,57 +153,42 @@ public class LoginActivity extends AppCompatActivity {
                 username = usernameEditText.getText().toString();
                 password = passwordEditText.getText().toString();
 
-
-                authentification = new Authentification(LoginActivity.this,username,password);
-                isCheckUser = authentification.checkUser(database);
-
-               Log.i("debug","is User valid LogActivity: "+isCheckUser);
+            //Remove the authentification
+                authentification = new Authentification(LoginActivity.this, username, password);
+                //isCheckUser = authentification.checkUser(database);
 
 
-               //VERIFIER SI L'UTILISATEUR EST DANS LA BASE DE DONNEES
+                //VERIFIER SI L'UTILISATEUR EST DANS LA BASE DE DONNEES
 
-                if(authentification.isNetworkAvailable(LoginActivity.this)){
-                    if(isCheckUser){
-                        Log.i("debug","The user exist inside the database. i don't need firebase");
-                        loginViewModel.login(username,password);
-                    }
-                    else if(isCheckUser==false ) {
+                if (authentification.isNetworkAvailable(LoginActivity.this)) {
 
-                        myRef = database2.getReference(username);
-                        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    myRef = database2.getReference(username);
+                    myRef.addListenerForSingleValueEvent(new ValueEventListener() {
 
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                String passwordCheck = dataSnapshot.child("password").getValue(String.class);
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            String passwordCheck = dataSnapshot.child("password").getValue(String.class);
 
-                                if (authentification.get_hash_pasword(password).equals(passwordCheck)) {
-                                    Log.i("debug", "the user exist firebase");
-                                    authentification.createUser(dataSnapshot, database);
-                                    // Log.i("debug","Create the user "+status_new_password);
-                                    loginViewModel.login(username, password);
-                                } else {
-                                    Log.i("debug", "The user don't exist firebase");
-                                    loadingProgressBar.setVisibility(View.INVISIBLE);
-                                    messenger.message(LoginActivity.this, "Login failed", "Le mot de passe et/ou l'identifiant est incorrect", 0);
-                                }
+                            if (authentification.get_hash_pasword(password).equals(passwordCheck)) {
+                                Log.i("debug", "the user exist firebase");
+                                // authentification.createUser(dataSnapshot, database);
+                                authentification.session(dataSnapshot.child("nom").getValue(String.class),1);
+                                loginViewModel.login(username, password);
                             }
-
-                            @Override
-                            public void onCancelled(DatabaseError error) {
-                                // Failed to read value
-                                Log.w("debug", "Failed to read value.", error.toException());
-                                loadingProgressBar.setVisibility(View.INVISIBLE);
-                                Log.i("debug", "Login failed can not reed the value");
-                                messenger.message(LoginActivity.this, "Login failed", "Le mot de passe et/ou l'identifiant est incorrect", 0);
+                            else {
+                              onCancelled(DatabaseError.fromException(new Exception("Le mot de passe et/ou l'identifiant est incorrect")));
                             }
-                        });
+                        }
 
-                    }
-                    else{
-                        loadingProgressBar.setVisibility(View.INVISIBLE);
-                        Log.i("debug","Login failed");
-                        messenger.message(LoginActivity.this,"Login failed","Le mot de passe et/ou l'identifiant est incorrect",0);
-                    }
+                        @Override
+                        public void onCancelled(DatabaseError error) {
+                            // Failed to read value
+                            Log.w("debug", "Failed to read value.", error.toException());
+                            loadingProgressBar.setVisibility(View.INVISIBLE);
+                            Log.i("debug", "Login failed can not reed the value");
+                            messenger.message(LoginActivity.this, "Login failed", "Le mot de passe et/ou l'identifiant est incorrect", 0);
+                        }
+                    });
                 }
                 else{
                     loadingProgressBar.setVisibility(View.INVISIBLE);
@@ -214,8 +197,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
-
-
 
 
     private void updateUiWithUser(LoggedInUserView model) {
@@ -236,10 +217,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-
-        Toast.makeText(LoginActivity.this,"Hello",Toast.LENGTH_LONG).show();
-        Log.i("debug","Quiter ");
-        //super.onBackPressed();
+        super.onBackPressed();
     }
 
 
