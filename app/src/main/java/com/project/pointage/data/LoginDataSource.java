@@ -4,7 +4,6 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.project.pointage.Database;
 import com.project.pointage.data.model.LoggedInUser;
 import com.project.pointage.ui.login.LoginActivity;
 
