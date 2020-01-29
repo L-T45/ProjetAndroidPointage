@@ -52,8 +52,8 @@ public class EmployeCompanies extends AppCompatActivity {
         sendMessage = findViewById(R.id.send_sms);
         textView1 = findViewById(R.id.permission_asking);
 
-        //employeeNumber = "0668475292";
-        employeeNumber = "0690916543";
+        employeeNumber = "0668475292";
+
 
         sendMessage.setText("Vérifier la position");
         textView1.setVisibility(View.VISIBLE);
